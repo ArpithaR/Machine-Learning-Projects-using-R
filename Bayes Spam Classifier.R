@@ -13,7 +13,7 @@ colnames(inp_sms_file) <- c("type", "text")
 ###                           Data PreProcessing                                             ###
 ### ---------------------------------------------------------------------------------------- ###
 
-# Factorize the type
+# Factorize type and create corpus for the text
 inp_sms_file$type <- factor(inp_sms_file$type)
 sms_corpus <- Corpus(VectorSource(inp_sms_file$text))
 
@@ -27,7 +27,7 @@ sms_corpus_clean <- tm_map(sms_corpus_clean, content_transformer(stripWhitespace
 # Tokenize the message corpus and create a sparse matrix 
 sms_dtm_mtx <- DocumentTermMatrix(sms_corpus_clean)
 
-## split data into train and test datasets in 75:25 ratio 
+## Split data into train and test datasets in 75:25 ratio 
 # 1) split input sms file
 inp_sms_train <- inp_sms_file[1:2387,]
 inp_sms_test <- inp_sms_file[2388:3183,]
@@ -38,11 +38,11 @@ sms_dtm_test <- sms_dtm_mtx[2388:3183,]
 sms_corpus_train <- sms_corpus_clean[1:2387]
 sms_corpus_test <- sms_corpus_clean[2388:3183]
 
-# Keep only words that appear atleast 10 times
+# Keep only frequently occuring words
 sms_train_file <- DocumentTermMatrix(sms_corpus_train, list(dictionary = findFreqTerms(sms_dtm_train,25)))
 sms_test_file <- DocumentTermMatrix(sms_corpus_test, list(dictionary = findFreqTerms(sms_dtm_test,15)))
 
-# convert count to factors
+# Convert count to factors
 convert_tofactor <- function(n) {
     n <- ifelse(n > 0, 1, 0)
     n <- factor(n, levels = c(0,1), labels = c("No", "Yes"))
