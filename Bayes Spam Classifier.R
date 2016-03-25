@@ -64,20 +64,4 @@ sms_test_predictor <- predict(sms_train_model, sms_test_file)
 # Check model performance
 CrossTable(sms_test_predictor$class, inp_sms_test$type, prop.chisq = FALSE, prop.t = FALSE, 
            prop.r = FALSE, dnn = c('predicted', 'actual'))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+           
