@@ -25,7 +25,7 @@ cancer_train_target <- cancer_raw[1:469, 1]
 cancer_test_target <- cancer_raw[470:569, 1]
 
 # Train and classify using KNN 
-cancer_pred <- knn(train=cancer_train, test=cancer_test, cl=cancer_train_target, k=15)
+cancer_pred <- knn(train=cancer_train, test=cancer_test, cl=cancer_train_target, k=10)
 
 # Check performance of the model
 CrossTable(x=cancer_test_target, y=cancer_pred, prop.chisq=FALSE)
