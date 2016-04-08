@@ -1,0 +1,50 @@
+# Identifying risky bank loans using C5.0 decision trees
+
+# Read and view structure of the dataset
+credit_risk <- read.csv("credit.csv")
+str(credit)
+
+## table(credit$checking_balance)
+## table(credit$savings_balance)
+## summary(credit$months_loan_duration)
+## summary(credit$amount)
+## table(credit$default)
+
+# Create a random order of records before splitting data
+set.seed(12345)
+credit_rand <- credit_risk[order(runif(1000)), ]
+
+# Split datset into train and test
+creditR_train <- credit_rand[1:900, ]
+creditR_test <- credit_rand[901:1000, ]
+
+## Check propotion of default vs no-default in test and train datasets
+# prop.table(table(credit_train$default))
+# prop.table(table(credit_test$default))
+
+# Train the model on data
+credit_model1 <- C5.0(creditR_train[-17], creditR_train$default)
+# View tree performance by # summary(credit_model) # credit_model
+
+# Evaluate performance
+credit_pred1 <- predict(credit_model1, creditR_test)
+CrossTable(creditR_test$default, credit_pred1,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual default', 'predicted default'))
+
+# Boost accuracy of performance
+credit_boost10 <- C5.0(creditR_train[-17], creditR_train$default, trials = 10)
+credit_boost_pred10 <- predict(credit_boost10, creditR_test)
+CrossTable(creditR_test$default, credit_boost_pred10,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual default', 'predicted default'))
+
+# Assign cost for false negatives
+error_cost <- matrix(c(0, 1, 4, 0), nrow = 2)
+credit_cost <- C5.0(creditR_train[-17], creditR_train$default,
+                    costs = error_cost)
+credit_cost_pred <- predict(credit_cost, creditR_test)
+CrossTable(creditR_test$default, credit_cost_pred,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual default', 'predicted default'))
+
